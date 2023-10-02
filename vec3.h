@@ -15,7 +15,7 @@ class vec3{
         //constructor
         vec3() : e{0,0,0} {}
         //parameterized constructor
-        vec3(double e0, double e0, double e0) : e{e0, e1, e2} {}
+        vec3(double e0, double e1, double e2) : e{e0, e1, e2} {}
 
         //x, y, z coordinates
         double x() const { return e[0]; }
@@ -31,10 +31,11 @@ class vec3{
         double& operator[](int i) { return e[i]; }
 
         //operator overload will allow for += to be used on vetors
-        vec3& operator+=(const vec3 &v){
+        vec3& operator+=(const vec3 &V){
             e[0] += V.e[0];
             e[1] += V.e[1];
             e[2] += V.e[2];
+            return *this;
         }
 
         //operator overload will allow for *= to be used on vetors
@@ -42,6 +43,7 @@ class vec3{
             e[0] *= t;
             e[1] *= t;
             e[2] *= t;
+            return *this;
         }
 
         //this operator overload will allow for /= to be used on vetors

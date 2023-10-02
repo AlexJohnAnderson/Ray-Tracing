@@ -23,8 +23,9 @@ int main() {
             //sets pixel_color to rgb components using vec3 object
             auto pixel_color = color(double(i)/(image_width-1), double(j)/(image_height-1), 0);
             //writes the rgb vectors to std::out
-            write_color(std:cout, pixel_color)
+            write_color(std::cout, pixel_color);
         }
     }
+    //error stream message to signify output is done
     std::clog << "\rDone.\n";
 }
