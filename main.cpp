@@ -4,7 +4,31 @@
 
 #include <iostream>
 
+//function to determine if sphere is h
+bool hit_sphere(const point3& center, double radius, const ray& r) {
+    //calculates a vector from he origin of the ray to the center of the sphere
+    vec3 oc = r.origin() - center;
+    //a, b and c will be used for calculating the discriminant of the sphere
+    //calculates the square of the magnitude of r.
+    //a is a measure of how "fast" the ray is moving
+    auto a = dot(r.direction(), r.direction());
+    //calculates the dot product between the oc vector and the ray passed in
+    //b is a measure of where the ray intersection occurs
+    auto b = 2.0 * dot(oc, r.direction());
+    //calculates the magnitude of oc and subtracts radius squared
+    //c is a measure of wheather the ray's origin is inside or outside
+    auto c = dot(oc, oc) - radius*radius;
+    //formula for a sphere
+    auto discriminant = b*b - 4*a*c;
+    //return true if t
+    return (discriminant >= 0);
+}
+
 color ray_color(const ray& r){
+    //check to see if the vector is anywhere 
+    if (hit_sphere(point3(0,0,-1), 0.5, r)){
+        return color(1, 0, 0);
+    }
     vec3 unit_direction = unit_vector(r.direction());
     auto a =0.5*(unit_direction.y() + 1.0);
     //returns a vec3 object with rgb set to 0
