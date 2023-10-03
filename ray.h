@@ -11,10 +11,12 @@ class ray{
         //this allows us to create a ray by specifying origin and direction during instantiation
         ray(const point3& origin, const vec3& direction) : orig(origin), dir(direction) {}
 
-        //
+        //returns the origin point of the 3D line
         point3 origin() const { return orig; }
+        //returs the direction vector of the 3D line
         vec3 direction() const { return dir; }
 
+        //computes a point with the function P(t)=A+t(b) where A is the ray origin and b is the ray direction
         point3 at(double t) const {
             return orig + t*dir;
         }
