@@ -18,9 +18,9 @@ bool hit_sphere(const point3& center, double radius, const ray& r) {
     //calculates the magnitude of oc and subtracts radius squared
     //c is a measure of wheather the ray's origin is inside or outside
     auto c = dot(oc, oc) - radius*radius;
-    //formula for a sphere
+    //formula to see if ray intersects a sphere
     auto discriminant = b*b - 4*a*c;
-    //return true if t
+    //return true if the discriminant is greather than 0(indicated the ray intersects the circle)
     return (discriminant >= 0);
 }
 
