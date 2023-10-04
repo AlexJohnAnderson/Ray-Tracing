@@ -2,26 +2,49 @@
 #include "vec3.h"
 #include "ray.h"
 
+#include <cmath>
 #include <iostream>
 
 //function to determine if sphere is h
-bool hit_sphere(const point3& center, double radius, const ray& r) {
-    //calculates a vector from he origin of the ray to the center of the sphere
+double hit_sphere(const point3& center, double radius, const ray& r) {
+    //calculates a vector from the origin of the ray to the center of the sphere
     vec3 oc = r.origin() - center;
     //a, b and c will be used for calculating the discriminant of the sphere
-    //calculates the square of the magnitude of r.
+    //calculates the magnitude of r.
     //a is a measure of how "fast" the ray is moving
-    auto a = dot(r.direction(), r.direction());
+    auto a = r.direction().length_squared();
     //calculates the dot product between the oc vector and the ray passed in
     //b is a measure of where the ray intersection occurs
-    auto b = 2.0 * dot(oc, r.direction());
+    auto half_b = dot(oc, r.direction());
     //calculates the magnitude of oc and subtracts radius squared
     //c is a measure of wheather the ray's origin is inside or outside
-    auto c = dot(oc, oc) - radius*radius;
+    auto c = oc.length_squared() - radius*radius;
     //formula to see if ray intersects a sphere
-    auto discriminant = b*b - 4*a*c;
-    //return true if the discriminant is greather than 0(indicated the ray intersects the sphere)
-    return (discriminant >= 0);
+    auto discriminant = half_b*half_b - a*c;
+    //return -1 if the discriminant is greather than 0(indicates the ray does not intersect the sphere)
+    if((discriminant < 0)){
+        return -1.0;
+    }
+    //return the distance along the ray at which the intersection occurs
+    else{
+        return((-half_b - sqrt(discriminant)) / (a));
+    }
+}
+
+//currently does not render a cube 
+//needs to detect edges of cube using discriminant
+bool hit_cube(const point3& min_corner, const point3& max_corner, const ray& r){
+    auto a = (min_corner.x() - r.origin().x()) / (r.direction().x());
+    auto b = (max_corner.x() - r.origin().x()) / (r.direction().x());
+    auto c = (min_corner.y() - r.origin().y()) / (r.direction().y());
+    auto d = (max_corner.y() - r.origin().y()) / (r.direction().y());
+    auto e = (min_corner.z() - r.origin().z()) / (r.direction().z());
+    auto f = (max_corner.z() - r.origin().z()) / (r.direction().z());
+
+    double min = std::max(std::max(std::min(a, b), std::min(c, d)), std::min(e, f));
+    double max = std::min(std::min(std::max(a, b), std::max(c, d)), std::max(e, f));
+
+    return(max >= min && max >= 0);
 }
 
 //calculates the ray color as it interacts with the viewport
@@ -33,12 +56,14 @@ color ray_color(const ray& r){
     //we multiply this by 0.5 to make the range [0, 1]
     //this remapping is done to create a gradient effect on the vertical axis
     auto a =0.5*(unit_direction.y() + 1.0);
-    //check to see if the ray r hit the sphere.
-    //pass in the center point of the sphere, with a radius of 0.5, and the ray r
-    if (hit_sphere(point3(0,0,-1), 0.5, r)){
-        //if the check passes then return red
-        return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(1.0, 0.8, 0.2);
+    //check to see if the ray r hit the shape.
+
+    auto t = hit_sphere(point3(0,0,-1), 0.5, r);
+    if (t > 0.0) {
+        vec3 N = unit_vector(r.at(t) - vec3(0,0,-1));
+        return 0.5*color(N.x()+1, N.y()+1, N.z()+1);
     }
+
     //returns a vec3 object with rgb set to 0
     //            white portion              blue poriton
     return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
@@ -82,7 +107,7 @@ int main() {
     //doing so shift the position from the upper-left corner of the viewport to the upper left corner of the first pixel in the image.
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-    
+
     //render the image
     
     //ppm image header
@@ -100,8 +125,7 @@ int main() {
             auto ray_direction = pixel_center - camera_center;
             //creates a ray object using the center point and the direction of the ray
             ray r(camera_center, ray_direction);
-
-            //color of the pixel is calculated using ray_color(currently returns black for all pixels)
+            //color of the pixel is calculated using ray_color
             color pixel_color = ray_color(r);
             //writes the color to std::out which is then formatted to a .ppm file
             write_color(std::cout, pixel_color);

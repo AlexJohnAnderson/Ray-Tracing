@@ -23,7 +23,7 @@ class vec3{
         double z() const { return e[2]; }
 
 
-        //overloading - operator to turn the vector negative
+        //overloading - operator to turn the vector poiting in the opposite direction
         vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
         //overloading [] to return the index passed in(0, 1, or 2) of the vector. Can be called on const intances(read only) of vec3
         double operator[](int i) const { return e[i]; }

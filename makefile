@@ -4,8 +4,8 @@ prog: main.o
 main.o: main.cpp
 	g++ -std=c++11 -g -Wall -c main.cpp
 
-test: 
+test: prog
 	prog > image.ppm
 
-clean: 
-	del *.o *.exe *.ppm prog 
+clean:
+	del *.o *.exe *.ppm prog
