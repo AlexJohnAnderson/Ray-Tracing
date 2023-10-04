@@ -37,7 +37,7 @@ color ray_color(const ray& r){
     //pass in the center point of the sphere, with a radius of 0.5, and the ray r
     if (hit_sphere(point3(0,0,-1), 0.5, r)){
         //if the check passes then return red
-        return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(1.0, 0.7, 0.5);
+        return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(1.0, 0.8, 0.2);
     }
     //returns a vec3 object with rgb set to 0
     //            white portion              blue poriton
@@ -82,7 +82,7 @@ int main() {
     //doing so shift the position from the upper-left corner of the viewport to the upper left corner of the first pixel in the image.
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-
+    
     //render the image
     
     //ppm image header
