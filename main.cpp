@@ -20,18 +20,27 @@ bool hit_sphere(const point3& center, double radius, const ray& r) {
     auto c = dot(oc, oc) - radius*radius;
     //formula to see if ray intersects a sphere
     auto discriminant = b*b - 4*a*c;
-    //return true if the discriminant is greather than 0(indicated the ray intersects the circle)
+    //return true if the discriminant is greather than 0(indicated the ray intersects the sphere)
     return (discriminant >= 0);
 }
 
+//calculates the ray color as it interacts with the viewport
 color ray_color(const ray& r){
-    //check to see if the vector is anywhere 
+    //check to see if the ray r hit the sphere.
+    //pass in the center point of the sphere, with a radius of 0.5, and the ray r
     if (hit_sphere(point3(0,0,-1), 0.5, r)){
+        //if the check passes then return red
         return color(1, 0, 0);
     }
+    //calculates the unit vector of the rays direction
     vec3 unit_direction = unit_vector(r.direction());
+    //calculates a using the y component(verticl extension of the vector) of the normalized ray direction
+    //we add 1 to shift the range from [-1, 1] to [0, 2]
+    //we multiply this by 0.5 to make the range [0, 1]
+    //this remapping is done to create a gradient effect on the vertical axis
     auto a =0.5*(unit_direction.y() + 1.0);
     //returns a vec3 object with rgb set to 0
+    //            white portion              blue poriton
     return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
 }
 
