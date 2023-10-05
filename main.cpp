@@ -1,37 +1,14 @@
 #include "color.h"
 #include "vec3.h"
 #include "ray.h"
+#include "hittable.h"
+#include "sphere.h"
 
 #include <cmath>
 #include <iostream>
 
-//function to determine if sphere is h
-double hit_sphere(const point3& center, double radius, const ray& r) {
-    //calculates a vector from the origin of the ray to the center of the sphere
-    vec3 oc = r.origin() - center;
-    //a, b and c will be used for calculating the discriminant of the sphere
-    //calculates the magnitude of r.
-    //a is a measure of how "fast" the ray is moving
-    auto a = r.direction().length_squared();
-    //calculates the dot product between the oc vector and the ray passed in
-    //b is a measure of where the ray intersection occurs
-    auto half_b = dot(oc, r.direction());
-    //calculates the magnitude of oc and subtracts radius squared
-    //c is a measure of wheather the ray's origin is inside or outside
-    auto c = oc.length_squared() - radius*radius;
-    //formula to see if ray intersects a sphere
-    auto discriminant = half_b*half_b - a*c;
-    //return -1 if the discriminant is greather than 0(indicates the ray does not intersect the sphere)
-    if((discriminant < 0)){
-        return -1.0;
-    }
-    //return the distance along the ray at which the intersection occurs
-    else{
-        return((-half_b - sqrt(discriminant)) / (a));
-    }
-}
 
-//currently does not render a cube 
+//function to render a cube with vector manipulation, currently does not render a cube 
 //needs to detect edges of cube using discriminant
 bool hit_cube(const point3& min_corner, const point3& max_corner, const ray& r){
     auto a = (min_corner.x() - r.origin().x()) / (r.direction().x());
@@ -56,9 +33,9 @@ color ray_color(const ray& r){
     //we multiply this by 0.5 to make the range [0, 1]
     //this remapping is done to create a gradient effect on the vertical axis
     auto a =0.5*(unit_direction.y() + 1.0);
-    //check to see if the ray r hit the shape.
-
-    auto t = hit_sphere(point3(0,0,-1), 0.5, r);
+    //t hit function is used to 
+    auto t = hit(point3(0,0,-1), 0.5, r);
+    //if t is greater 
     if (t > 0.0) {
         vec3 N = unit_vector(r.at(t) - vec3(0,0,-1));
         return 0.5*color(N.x()+1, N.y()+1, N.z()+1);
