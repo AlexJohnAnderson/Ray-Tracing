@@ -6,7 +6,7 @@
 
 class sphere : public hittable {
   public:
-    //parameterized constructor 
+    //parameterized constructor initialized the center point and raduis 
     sphere(point3 _center, double _radius) : center(_center), radius(_radius) {}
 
     //r is a reference to a ray to be tested for intersection
@@ -52,7 +52,8 @@ class sphere : public hittable {
         //calculates vector that will be used for shading and lighting.
         //rec.p-center calculates a vector from the center to the point of intersection.(direction)
         //dividing by the radius normalizes the vector which is useful for shading
-        rec.normal = (rec.p - center) / radius;
+        vec3 outward_normal = (rec.p - center) / radius;
+        rec.set_face_normal(r, outward_normal);
 
         return true;
     }

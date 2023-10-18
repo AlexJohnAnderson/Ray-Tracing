@@ -1,7 +1,7 @@
+#include "common.h"
 #include "color.h"
-#include "vec3.h"
-#include "ray.h"
 #include "hittable.h"
+#include "hittable_list.h"
 #include "sphere.h"
 
 #include <cmath>
@@ -25,7 +25,11 @@ bool hit_cube(const point3& min_corner, const point3& max_corner, const ray& r){
 }
 
 //calculates the ray color as it interacts with the viewport
-color ray_color(const ray& r){
+color ray_color(const ray& r, const hittable& scene){
+    hit_record rec;
+    if (scene.hit(r, 0, infinity, rec)) {
+        return 0.5 * (rec.normal + color(1,1,1));
+    }
     //calculates the unit vector of the rays direction
     vec3 unit_direction = unit_vector(r.direction());
     //calculates a using the y component(verticl extension of the vector) of the normalized ray direction
@@ -33,14 +37,6 @@ color ray_color(const ray& r){
     //we multiply this by 0.5 to make the range [0, 1]
     //this remapping is done to create a gradient effect on the vertical axis
     auto a =0.5*(unit_direction.y() + 1.0);
-    //t hit function is used to 
-    auto t = hit(point3(0,0,-1), 0.5, r);
-    //if t is greater 
-    if (t > 0.0) {
-        vec3 N = unit_vector(r.at(t) - vec3(0,0,-1));
-        return 0.5*color(N.x()+1, N.y()+1, N.z()+1);
-    }
-
     //returns a vec3 object with rgb set to 0
     //            white portion              blue poriton
     return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
@@ -56,6 +52,11 @@ int main() {
     int image_height = static_cast<int>(image_width / aspect_ratio);
     image_height = (image_height < 1) ? 1 : image_height;
 
+    //scene
+    hittable_list scene;
+
+    scene.add(make_shared<sphere>(point3(0,0,-1), 0.5));
+    scene.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
     //Camera setup
     // represents distance from the camera to the image
     auto focal_length = 1.0;
@@ -103,7 +104,7 @@ int main() {
             //creates a ray object using the center point and the direction of the ray
             ray r(camera_center, ray_direction);
             //color of the pixel is calculated using ray_color
-            color pixel_color = ray_color(r);
+            color pixel_color = ray_color(r, scene);
             //writes the color to std::out which is then formatted to a .ppm file
             write_color(std::cout, pixel_color);
         }
