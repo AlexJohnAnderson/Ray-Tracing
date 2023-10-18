@@ -14,6 +14,7 @@ class camera {
 
     double aspect_ratio = 1.0;  //ratio of image width over height
     int    image_width  = 100;  //rendered image width in pixel count
+    int    samples_per_pixel = 10;   //count of random samples for each pixel
 
     void render(const hittable& scene) {
         //call to initialize the viewport
@@ -31,20 +32,12 @@ class camera {
             //nested loop to iterate over img width
             for (int i = 0; i < image_width; ++i) {
 
-                //calculates the position of the current pixel using the upper left pixel
-                auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
-
-                //calculates the direction of a ray from the camera center to the current pixel
-                auto ray_direction = pixel_center - center;
-
-                //creates a ray object using the center point and the direction of the ray
-                ray r(center, ray_direction);
-
-                //color of the pixel is calculated using ray_color
-                color pixel_color = ray_color(r, scene);
-
-                //writes the color to std::out which is then formatted to a .ppm file
-                write_color(std::cout, pixel_color);
+                color pixel_color(0,0,0);
+                for (int sample = 0; sample < samples_per_pixel; ++sample) {
+                    ray r = get_ray(i, j);
+                    pixel_color += ray_color(r, scene);
+                }
+                write_color(std::cout, pixel_color, samples_per_pixel);
             }
         }
         //error stream message to signify output is done
@@ -113,6 +106,25 @@ class camera {
         //returns a vec3 object with rgb set to 0
         //            white portion              blue poriton
         return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
+    }
+    
+    ray get_ray(int i, int j) const {
+        // Get a randomly sampled camera ray for the pixel at location i,j.
+
+        auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
+        auto pixel_sample = pixel_center + pixel_sample_square();
+
+        auto ray_origin = center;
+        auto ray_direction = pixel_sample - ray_origin;
+
+        return ray(ray_origin, ray_direction);
+    }
+
+    vec3 pixel_sample_square() const {
+        // Returns a random point in the square surrounding a pixel at the origin.
+        auto px = -0.5 + random_double();
+        auto py = -0.5 + random_double();
+        return (px * pixel_delta_u) + (py * pixel_delta_v);
     }
 };
 
