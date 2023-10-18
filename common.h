@@ -20,9 +20,10 @@ inline double degrees_to_radians(double degrees) {
     return degrees * pi / 180.0;
 }
 
-//common Headers
+//Common Headers
 
 #include "ray.h"
 #include "vec3.h"
+#include "interval.h"
 
 #endif

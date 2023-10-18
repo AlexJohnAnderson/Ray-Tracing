@@ -13,7 +13,7 @@ class sphere : public hittable {
     //ray_tmin is the min valid value for ray object intersections
     //ray_tmax is the max valid value for ray object intersections 
     //rec is a reference to a hit_record object where info about intersection is stored
-    bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override {
+    bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
         //calculates a vector from the origin of the ray to the center of the sphere
         vec3 oc = r.origin() - center;
         //a, b and c will be used for calculating the discriminant of the sphere
@@ -36,11 +36,11 @@ class sphere : public hittable {
         // Find the nearest root that lies in the acceptable range.
         auto root = (-half_b - sqrtd) / a;
         //check if the root is in the valid range of values
-        if (root <= ray_tmin || ray_tmax <= root) {
+        if (!ray_t.surrounds(root)) {
             //set root equal to the 
             root = (-half_b + sqrtd) / a;
             //chceck if root is in the evalid range of values
-            if (root <= ray_tmin || ray_tmax <= root)
+            if (!ray_t.surrounds(root))
                 return false;
         }
         //setters for the hit record, rec
